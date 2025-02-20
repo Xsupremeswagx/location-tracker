@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #user-info {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Location Tracker</h1>
+    <div id="user-info">
+        <p>Loading...</p>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get user location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    document.getElementById('user-info').innerHTML += `<p>Latitude: ${latitude}</p>`;
+                    document.getElementById('user-info').innerHTML += `<p>Longitude: ${longitude}</p>`;
+
+                    // Send the location to Flask backend
+                    fetch('/location', {
+                        method: 'POST',
+                        body: new URLSearchParams({
+                            latitude: latitude,
+                            longitude: longitude
+                        }),
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data.message);
+                    });
+                }, function(error) {
+                    document.getElementById('user-info').innerHTML = '<p>Unable to retrieve your location.</p>';
+                });
+            } else {
+                document.getElementById('user-info').innerHTML = '<p>Geolocation is not supported by this browser.</p>';
+            }
+
+            // Get phone number (this is just a placeholder for now)
+            document.getElementById('user-info').innerHTML += '<p>Phone Number: Not available</p>';
+        });
+    </script>
+</body>
+</html>
