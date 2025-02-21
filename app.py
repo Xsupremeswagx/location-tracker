@@ -1,34 +1,25 @@
-import os
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# Store location data
-locations = []
-
-@app.route('/')
-def home():
-    return "Hello, visit /location to send your location."
-
 @app.route('/location', methods=['POST'])
 def store_location():
-    data = request.get_json()  # Parse the incoming JSON data
-    print(data)  # Print data to the console for debugging
-
+    data = request.get_json()  # Get the JSON data sent in the request
+    ip_address = request.remote_addr  # Get the IP address of the user
+    user_agent = request.user_agent.string  # Get the User-Agent string (device info)
+    
     latitude = data.get('latitude')
     longitude = data.get('longitude')
-
-    if latitude is None or longitude is None:
-        return jsonify({"message": "Missing latitude or longitude"}), 400
-
-    # Add the location to the list
-    locations.append({"latitude": latitude, "longitude": longitude})
-    return jsonify({"message": "Location data received successfully!"}), 200
-
-@app.route('/locations', methods=['GET'])
-def get_locations():
-    return jsonify(locations), 200
+    
+    if latitude and longitude:
+        # You can save or process the data here
+        print(f"Location data: Latitude={latitude}, Longitude={longitude}")
+        print(f"IP Address: {ip_address}")
+        print(f"User-Agent: {user_agent}")
+        
+        return jsonify({"message": "Location data received", "ip": ip_address, "device": user_agent}), 200
+    else:
+        return jsonify({"message": "Location data is missing!"}), 400
 
 if __name__ == '__main__':
-    # Use a specific port (10000) to match the deployment configuration
-    app.run(debug=True, host='0.0.0.0', port=10000)
+    app.run(debug=True)
