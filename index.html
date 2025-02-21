@@ -44,16 +44,5 @@
         <div class="line code-line">Receiving data...</div>
         <div class="line code-line">Data received successfully!</div>
     </div>
-
-    <script>
-        // Optional: simulate the "receiving location" data by making an API call in the background
-        fetch('/location', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ latitude: 41.1524846, longitude: -73.9877082 })
-        }).then(response => response.json()).then(data => console.log(data));
-    </script>
 </body>
 </html>
