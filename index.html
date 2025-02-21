@@ -6,96 +6,54 @@
     <title>Location Tracker</title>
     <style>
         body {
-            font-family: monospace;
             background-color: black;
-            color: #00FF00; /* Green color */
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            color: green;
+            font-family: monospace;
+            font-size: 20px;
             margin: 0;
+            padding: 0;
+        }
+
+        .code-line {
+            animation: typing 1.5s steps(30) 1s forwards;
+            white-space: nowrap;
             overflow: hidden;
         }
 
-        .code-animation {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 18px;
-            line-height: 2;
-            animation: drop 5s infinite;
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
         }
 
-        @keyframes drop {
-            0% { top: -100px; opacity: 0; }
-            10% { opacity: 1; }
-            100% { top: 100vh; opacity: 0; }
+        .container {
+            margin-top: 50px;
+            padding: 20px;
         }
 
-        #locationInfo {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 24px;
-            text-align: center;
-            visibility: hidden;
+        .line {
+            margin: 10px 0;
         }
 
-        .green-text {
-            color: #00FF00;
-        }
     </style>
 </head>
 <body>
-    <div class="code-animation">
-        <pre>
-&gt; Loading...
-&gt; Connecting to server...
-&gt; Fetching location data...
-&gt; Success!
-        </pre>
-    </div>
-
-    <div id="locationInfo">
-        <p class="green-text">Latitude: <span id="latitude"></span></p>
-        <p class="green-text">Longitude: <span id="longitude"></span></p>
-        <p class="green-text">IP: <span id="ip"></span></p>
-        <p class="green-text">Device: <span id="device"></span></p>
+    <div class="container">
+        <div class="line code-line">Compiling...</div>
+        <div class="line code-line">Starting service...</div>
+        <div class="line code-line">Connecting to server...</div>
+        <div class="line code-line">Receiving data...</div>
+        <div class="line code-line">Data received successfully!</div>
     </div>
 
     <script>
-        navigator.geolocation.getCurrentPosition(function(position) {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-
-            fetch('/location', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    latitude: latitude,
-                    longitude: longitude
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Display the data in the animation
-                document.getElementById('latitude').innerText = data.latitude;
-                document.getElementById('longitude').innerText = data.longitude;
-                document.getElementById('ip').innerText = data.ip;
-                document.getElementById('device').innerText = data.device;
-
-                // Reveal the location info after data is received
-                document.getElementById('locationInfo').style.visibility = 'visible';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
+        // Optional: simulate the "receiving location" data by making an API call in the background
+        fetch('/location', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ latitude: 41.1524846, longitude: -73.9877082 })
+        }).then(response => response.json()).then(data => console.log(data));
     </script>
 </body>
 </html>
