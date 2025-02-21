@@ -6,54 +6,60 @@
     <title>Location Tracker</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Courier New', monospace;
+            background-color: black;
+            color: #00FF00;
+            overflow: hidden;
+            height: 100vh;
+            margin: 0;
         }
-        #user-info {
-            margin-top: 20px;
+
+        #container {
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+            text-align: center;
+        }
+
+        .falling-text {
+            position: absolute;
+            animation: fall 5s infinite linear;
+            font-size: 24px;
+            opacity: 0.8;
+        }
+
+        @keyframes fall {
+            0% {
+                top: -50px;
+                opacity: 1;
+            }
+            100% {
+                top: 100vh;
+                opacity: 0;
+            }
+        }
+        
+        .log-entry {
+            color: #00FF00;
+            font-size: 20px;
+        }
+
+        .log-entry strong {
+            color: #FFFFFF;
         }
     </style>
 </head>
 <body>
-    <h1>Location Tracker</h1>
-    <div id="user-info">
-        <p>Loading...</p>
+    <div id="container">
+        <div class="falling-text">Loading...</div>
+        <div class="falling-text" style="animation-delay: 1s;">Welcome to Location Tracker</div>
+        <div class="falling-text" style="animation-delay: 2s;">Your IP: <strong>{{ log_entry.ip }}</strong></div>
+        <div class="falling-text" style="animation-delay: 3s;">Your Device: <strong>{{ log_entry.device }}</strong></div>
+        <div class="falling-text" style="animation-delay: 4s;">Message: <strong>{{ log_entry.message }}</strong></div>
     </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get user location
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
-                    document.getElementById('user-info').innerHTML += `<p>Latitude: ${latitude}</p>`;
-                    document.getElementById('user-info').innerHTML += `<p>Longitude: ${longitude}</p>`;
-
-                    // Send the location to Flask backend
-                    fetch('/location', {
-                        method: 'POST',
-                        body: new URLSearchParams({
-                            latitude: latitude,
-                            longitude: longitude
-                        }),
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log(data.message);
-                    });
-                }, function(error) {
-                    document.getElementById('user-info').innerHTML = '<p>Unable to retrieve your location.</p>';
-                });
-            } else {
-                document.getElementById('user-info').innerHTML = '<p>Geolocation is not supported by this browser.</p>';
-            }
-
-            // Get phone number (this is just a placeholder for now)
-            document.getElementById('user-info').innerHTML += '<p>Phone Number: Not available</p>';
-        });
+        // Optional: Add more effects or dynamic content here
     </script>
 </body>
 </html>
