@@ -1,23 +1,38 @@
+import os
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+# Store location data and logs in memory
+locations = []
+logs = []
+
 @app.route('/')
 def home():
-    ip_address = request.remote_addr  # Get the IP address of the user
-    user_agent = request.user_agent.string  # Get the User-Agent string (device info)
+    # Capture user details like IP and device
+    user_ip = request.remote_addr
+    user_device = request.user_agent.string
+    logs.append({"ip": user_ip, "device": user_device, "message": "Hello, visit /location to send your location."})
     
-    print(f"IP Address: {ip_address}")
-    print(f"User-Agent: {user_agent}")
-    
-    return jsonify({
-        "message": "Hello, visit /location to send your location.",
-        "ip": ip_address,
-        "device": user_agent
-    }), 200
+    return jsonify(logs[-1])  # Return the last log entry for testing
 
-import os
+@app.route('/location', methods=['POST'])
+def store_location():
+    data = request.get_json()  # Parse the incoming JSON data
+    print(data)  # Print data to the console for debugging
+
+    latitude = data.get('latitude')
+    longitude = data.get('longitude')
+
+    if latitude and longitude:
+        locations.append({"latitude": latitude, "longitude": longitude})
+        return jsonify({"message": "Location data received successfully!"}), 200
+    else:
+        return jsonify({"message": "Location data is missing!"}), 400
+
+@app.route('/logs', methods=['GET'])
+def get_logs():
+    return jsonify(logs), 200
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))  # Get the port from the environment, default to 5000
-    app.run(host='0.0.0.0', port=port)  # Bind to 0.0.0.0 for external access
+    app.run(debug=True)
