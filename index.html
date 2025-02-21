@@ -6,60 +6,96 @@
     <title>Location Tracker</title>
     <style>
         body {
-            font-family: 'Courier New', monospace;
+            font-family: monospace;
             background-color: black;
-            color: #00FF00;
-            overflow: hidden;
+            color: #00FF00; /* Green color */
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             height: 100vh;
             margin: 0;
+            overflow: hidden;
         }
 
-        #container {
-            position: relative;
-            top: 50%;
-            transform: translateY(-50%);
-            text-align: center;
-        }
-
-        .falling-text {
+        .code-animation {
             position: absolute;
-            animation: fall 5s infinite linear;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+            line-height: 2;
+            animation: drop 5s infinite;
+        }
+
+        @keyframes drop {
+            0% { top: -100px; opacity: 0; }
+            10% { opacity: 1; }
+            100% { top: 100vh; opacity: 0; }
+        }
+
+        #locationInfo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             font-size: 24px;
-            opacity: 0.8;
+            text-align: center;
+            visibility: hidden;
         }
 
-        @keyframes fall {
-            0% {
-                top: -50px;
-                opacity: 1;
-            }
-            100% {
-                top: 100vh;
-                opacity: 0;
-            }
-        }
-        
-        .log-entry {
+        .green-text {
             color: #00FF00;
-            font-size: 20px;
-        }
-
-        .log-entry strong {
-            color: #FFFFFF;
         }
     </style>
 </head>
 <body>
-    <div id="container">
-        <div class="falling-text">Loading...</div>
-        <div class="falling-text" style="animation-delay: 1s;">Welcome to Location Tracker</div>
-        <div class="falling-text" style="animation-delay: 2s;">Your IP: <strong>{{ log_entry.ip }}</strong></div>
-        <div class="falling-text" style="animation-delay: 3s;">Your Device: <strong>{{ log_entry.device }}</strong></div>
-        <div class="falling-text" style="animation-delay: 4s;">Message: <strong>{{ log_entry.message }}</strong></div>
+    <div class="code-animation">
+        <pre>
+&gt; Loading...
+&gt; Connecting to server...
+&gt; Fetching location data...
+&gt; Success!
+        </pre>
+    </div>
+
+    <div id="locationInfo">
+        <p class="green-text">Latitude: <span id="latitude"></span></p>
+        <p class="green-text">Longitude: <span id="longitude"></span></p>
+        <p class="green-text">IP: <span id="ip"></span></p>
+        <p class="green-text">Device: <span id="device"></span></p>
     </div>
 
     <script>
-        // Optional: Add more effects or dynamic content here
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            fetch('/location', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    latitude: latitude,
+                    longitude: longitude
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the data in the animation
+                document.getElementById('latitude').innerText = data.latitude;
+                document.getElementById('longitude').innerText = data.longitude;
+                document.getElementById('ip').innerText = data.ip;
+                document.getElementById('device').innerText = data.device;
+
+                // Reveal the location info after data is received
+                document.getElementById('locationInfo').style.visibility = 'visible';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
     </script>
 </body>
 </html>
