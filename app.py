@@ -9,18 +9,14 @@ logs = []
 
 @app.route('/')
 def home():
-    # Capture user details like IP and device
     user_ip = request.remote_addr
     user_device = request.user_agent.string
     logs.append({"ip": user_ip, "device": user_device, "message": "Hello, visit /location to send your location."})
-    
-    return jsonify(logs[-1])  # Return the last log entry for testing
+    return jsonify(logs[-1])
 
 @app.route('/location', methods=['POST'])
 def store_location():
-    data = request.get_json()  # Parse the incoming JSON data
-    print(data)  # Print data to the console for debugging
-
+    data = request.get_json()
     latitude = data.get('latitude')
     longitude = data.get('longitude')
 
@@ -35,5 +31,5 @@ def get_logs():
     return jsonify(logs), 200
 
 if __name__ == '__main__':
-    app.run(debug=False)
-
+    port = int(os.getenv("PORT", 5000))  # Use dynamic port from environment variable
+    app.run(debug=True, host="0.0.0.0", port=port)
